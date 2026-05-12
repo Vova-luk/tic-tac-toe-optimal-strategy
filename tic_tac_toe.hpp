@@ -62,6 +62,12 @@ class TicTacToeSolver {
 public:
     GameResult Solve(const StrategyTask& task, TreeNode*& result_tree);
 
+    PositionScore EvaluatePosition(
+        const GameBoard& board,
+        char current_player,
+        char strategy_player
+    );
+
 private:
     char GetOpponent(char player);
     int CountMark(const GameBoard& board, char mark);
@@ -87,12 +93,6 @@ private:
     PositionScore EvaluateMove(
         const GameBoard& board,
         int position,
-        char current_player,
-        char strategy_player
-    );
-
-    PositionScore EvaluatePosition(
-        const GameBoard& board,
         char current_player,
         char strategy_player
     );

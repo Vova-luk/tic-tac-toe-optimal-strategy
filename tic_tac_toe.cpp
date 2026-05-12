@@ -12,3 +12,11 @@ bool ParseStrategyTask(
 GameResult TicTacToeSolver::Solve(const StrategyTask& task, TreeNode*& result_tree) { 
     return GameResult{};
 }
+
+PositionScore TicTacToeSolver::EvaluatePosition(
+        const GameBoard& board,
+        char current_player,
+        char strategy_player
+    ) {
+        return PositionScore{};
+    }
