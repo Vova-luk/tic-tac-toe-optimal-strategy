@@ -8,3 +8,7 @@ bool ParseStrategyTask(
 ) {
     return true;
 }
+
+GameResult TicTacToeSolver::Solve(const StrategyTask& task, TreeNode*& result_tree) { 
+    return GameResult{};
+}
