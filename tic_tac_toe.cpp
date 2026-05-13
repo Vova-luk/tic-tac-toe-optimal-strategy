@@ -20,3 +20,12 @@ PositionScore TicTacToeSolver::EvaluatePosition(
     ) {
         return PositionScore{};
     }
+
+PositionScore TicTacToeSolver::EvaluateMove(
+        const GameBoard& board,
+        int position,
+        char current_player,
+        char strategy_player
+    ) {
+        return PositionScore{};
+    }

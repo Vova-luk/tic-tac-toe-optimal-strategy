@@ -68,6 +68,13 @@ public:
         char strategy_player
     );
 
+    PositionScore EvaluateMove(
+        const GameBoard& board,
+        int position,
+        char current_player,
+        char strategy_player
+    );
+
 private:
     char GetOpponent(char player);
     int CountMark(const GameBoard& board, char mark);
@@ -86,13 +93,6 @@ private:
     int CompareScores(
         const PositionScore& first,
         const PositionScore& second,
-        char current_player,
-        char strategy_player
-    );
-
-    PositionScore EvaluateMove(
-        const GameBoard& board,
-        int position,
         char current_player,
         char strategy_player
     );

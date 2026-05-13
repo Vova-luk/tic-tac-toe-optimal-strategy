@@ -29,6 +29,7 @@ add_executable(tests
     tests/ParseStrategyTaskTests.cpp
     tests/SolveTests.cpp
     tests/EvaluatePositionTests.cpp
+    tests/EvaluateMoveTests.cpp
 )
 
 target_link_libraries(tests PRIVATE
