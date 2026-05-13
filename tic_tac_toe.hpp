@@ -75,6 +75,12 @@ public:
         char strategy_player
     );
 
+    TreeNode* BuildOptimalTree(
+        const GameBoard& board,
+        char current_player,
+        char strategy_player
+    );
+
 private:
     char GetOpponent(char player);
     int CountMark(const GameBoard& board, char mark);
@@ -93,12 +99,6 @@ private:
     int CompareScores(
         const PositionScore& first,
         const PositionScore& second,
-        char current_player,
-        char strategy_player
-    );
-
-    TreeNode* BuildOptimalTree(
-        const GameBoard& board,
         char current_player,
         char strategy_player
     );

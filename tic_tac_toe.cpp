@@ -29,3 +29,13 @@ PositionScore TicTacToeSolver::EvaluateMove(
     ) {
         return PositionScore{};
     }
+
+TreeNode* TicTacToeSolver::BuildOptimalTree(
+        const GameBoard& board,
+        char current_player,
+        char strategy_player
+    ) {
+    TreeNode* node = new TreeNode();
+
+    return node;
+    }

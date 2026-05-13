@@ -30,6 +30,7 @@ add_executable(tests
     tests/SolveTests.cpp
     tests/EvaluatePositionTests.cpp
     tests/EvaluateMoveTests.cpp
+    tests/BuildOptimalTree.cpp
 )
 
 target_link_libraries(tests PRIVATE
