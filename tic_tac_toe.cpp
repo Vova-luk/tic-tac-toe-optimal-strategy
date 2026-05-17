@@ -3,6 +3,9 @@
 
 const int NO_POSITION = -1;
 const int TOTAL_INPUT_LINES = 5;
+const int BOARD_ROWS = 3;
+const int BOARD_COLUMNS = 3;
+const int BOARD_SIZE = 9;
 
 bool ParseStrategyTask(
     const std::vector<std::string>& lines,
@@ -55,7 +58,7 @@ bool ParseStrategyTask(
     if (!ValidateNextPlayer(task.board, task.next_player, error)) {
         return false;
     }
-    
+
     // Вернуть true, если все проверки пройдены успешно.
     return true;
 }
@@ -69,8 +72,46 @@ PositionScore TicTacToeSolver::EvaluatePosition(
         char current_player,
         char strategy_player
     ) {
-        return PositionScore{};
+        GameResult terminal_result;
+        PositionScore best_score;
+
+        // Проверить, является ли позиция конечной.
+        if (GetTerminalResult(board, strategy_player, terminal_result)) {
+            // Вернуть позицию как конечный результат
+            best_score.result = terminal_result;
+            best_score.distance = 0;
+            best_score.next_player_win_count = 0;
+            return best_score;
+        }
+
+        // Считать отсутствие лучшей оценки.
+        bool has_best = false;
+
+        // Для каждой клетки поля выполнять
+        for (int position = 0; position < BOARD_SIZE; ++position) {
+            int row = position / BOARD_COLUMNS;
+            int column = position % BOARD_COLUMNS;
+            PositionScore current_score;
+
+            // Проверить, свободна ли клетка.
+            if (board.cells[row][column] != '.') {
+                continue;
+            }
+
+            // Оценить ход в эту клетку
+            current_score = EvaluateMove(board, position, current_player, strategy_player);
+
+            // Если лучшая оценка ещё не выбрана, то
+            if (!has_best) {
+                best_score = current_score;
+                has_best = true;
+            } else if (CompareScores(current_score, best_score, current_player, strategy_player) > 0) {
+                best_score = current_score;
+            }
     }
+
+    return best_score;
+}
 
 PositionScore TicTacToeSolver::EvaluateMove(
         const GameBoard& board,
