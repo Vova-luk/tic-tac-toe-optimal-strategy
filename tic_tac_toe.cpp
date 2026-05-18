@@ -141,7 +141,80 @@ TreeNode* TicTacToeSolver::BuildOptimalTree(
         char current_player,
         char strategy_player
     ) {
-    TreeNode* node = new TreeNode();
+    // Создать новый узел дерева
+    TreeNode* root = new TreeNode();
 
-    return node;
+    GameResult terminal_result;
+    PositionScore best_score;
+    bool has_best = false;
+
+    root->id = 0;
+    // Записать в узел текущее поле
+    root->board = board;
+    // Проверить, является ли позиция конечной.
+    if (GetTerminalResult(board, strategy_player, terminal_result)) {
+        // Вернуть узел без потомков
+        return root;
+    }
+
+    // Для каждой позиции от 0 до 8 выполнять
+    for (int position = 0; position < BOARD_SIZE; ++position) {
+        // Вычислить строку и столбец по номеру позиции
+        int row = position / BOARD_COLUMNS;
+        int column = position % BOARD_COLUMNS;
+        PositionScore current_score;
+
+        // Если клетка занята
+        if (board.cells[row][column] != '.') {
+            // Перейти к следующей позиции
+            continue;
+        }
+
+        // Вычислить оценку хода.
+        current_score = EvaluateMove(board, position, current_player, strategy_player);
+
+        // Если лучшая оценка отсутствует
+        if (!has_best) {
+            // Сохранить текущую оценку как лучшую
+            best_score = current_score;
+            // Установить признак наличия лучшей оценки
+            has_best = true;
+        // Иначе сравнить текущую оценку с лучшей
+        } else if (CompareScores(current_score, best_score, current_player, strategy_player) > 0) {
+            // Заменить лучшую оценку
+            best_score = current_score;
+        }
+    }
+
+    // Для каждой позиции от 0 до 8 выполнять
+    for (int position = 0; position < BOARD_SIZE; ++position) {
+        // Вычислить строку и столбец по номеру позиции
+        int row = position / BOARD_COLUMNS;
+        int column = position % BOARD_COLUMNS;
+        PositionScore current_score;
+        GameBoard next_board;
+        TreeNode* child;
+
+        // Если клетка занята
+        if (board.cells[row][column] != '.') {
+            // Перейти к следующей позиции
+            continue;
+        }
+
+        // Повторно вычислить оценку хода
+        current_score = EvaluateMove(board, position, current_player, strategy_player);
+
+        // Сравнить её с лучшей оценкой
+        if (CompareScores(current_score, best_score, current_player, strategy_player) == 0) {
+            // Если оценки равны
+            // Построить новое поле
+            next_board = MakeMove(board, position, current_player);
+            // Рекурсивно построить дочернее поддерево
+            child = BuildOptimalTree(next_board, GetOpponent(current_player), strategy_player);
+            // Добавить дочерний узел в список children
+            root->children.push_back(child);
+        }
+    }
+    // Вернуть указатель на текущий узел
+    return root;
     }
