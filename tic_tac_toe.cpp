@@ -119,7 +119,21 @@ PositionScore TicTacToeSolver::EvaluateMove(
         char current_player,
         char strategy_player
     ) {
-        return PositionScore{};
+    // Построить новое поле после хода текущего игрока (MakeMove).
+    GameBoard next_board = MakeMove(board, position, current_player);
+    // Определить следующего игрока
+    char opponent = GetOpponent(current_player);
+    // Рекурсивно оценить новую позицию и получить оценку позиции
+    PositionScore score =
+        EvaluatePosition(next_board, opponent, strategy_player);
+
+    // Увеличить расстояние до результата на 1
+    score.distance = score.distance + 1; 
+    // Подсчитать количество немедленных побед у следующего игрока
+    score.next_player_win_count =
+        CountImmediateWins(next_board, GetOpponent(current_player));
+
+    return score;
     }
 
 TreeNode* TicTacToeSolver::BuildOptimalTree(
