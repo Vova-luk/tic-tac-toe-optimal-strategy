@@ -347,7 +347,13 @@ bool ValidateNextPlayer(
 }
 
 GameResult TicTacToeSolver::Solve(const StrategyTask& task, TreeNode*& result_tree) { 
-    return GameResult{};
+
+    // Рекурсивно оценить позицию
+    PositionScore score = EvaluatePosition(task.board, task.next_player, task.strategy_player);
+    // Построить оптимальную стратегию
+    result_tree = BuildOptimalTree(task.board, task.next_player, task.strategy_player);
+    // Вернуть результат оцнеки
+    return score.result;
 }
 
 PositionScore TicTacToeSolver::EvaluatePosition(
