@@ -425,6 +425,61 @@ PositionScore TicTacToeSolver::EvaluateMove(
     return score;
 }
 
+GameBoard TicTacToeSolver::MakeMove(
+    const GameBoard& board,
+    int position,
+    char player
+) {
+    // Создать новое поле.
+    GameBoard next_board;
+    int row;
+    int column;
+
+    // Скопировать в него все клетки исходного поля.
+    for (row = 0; row < BOARD_ROWS; ++row) {
+        for (column = 0; column < BOARD_COLUMNS; ++column) {
+            next_board.cells[row][column] = board.cells[row][column];
+        }
+    }
+
+    // Вычислить row и column по номеру position.
+    row = position / BOARD_COLUMNS;
+    column = position % BOARD_COLUMNS;
+    // Записать символ player в соответствующую клетку.
+    next_board.cells[row][column] = player;
+
+    // Вернуть новое поле
+    return next_board;
+}
+
+int TicTacToeSolver::CountImmediateWins(const GameBoard& board, char player) {
+    // Установить счётчик немедленных побед в ноль.
+    int count = 0;
+
+    // Для каждой позиции от 0 до 8 выполнять:
+    for (int position = 0; position < BOARD_SIZE; ++position) {
+        // Вычислить row и column по номеру позиции.
+        int row = position / BOARD_COLUMNS;
+        int column = position % BOARD_COLUMNS;
+
+        // Если клетка занята, перейти к следующей позиции.
+        if (board.cells[row][column] != '.') {
+            continue;
+        }
+
+        // Построить новое поле после хода игрока в эту позицию.
+        GameBoard next_board = MakeMove(board, position, player);
+        // Проверить приводит ли построенное поле к победе игрока
+        if (HasWin(next_board, player)) {
+            // Если приводит, увеличить счётчик на 1.
+            ++count;
+        }
+    }
+
+    // Вернуть значение счётчика.
+    return count;
+}
+
 TreeNode* TicTacToeSolver::BuildOptimalTree(
         const GameBoard& board,
         char current_player,
