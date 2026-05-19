@@ -347,7 +347,6 @@ bool ValidateNextPlayer(
 }
 
 GameResult TicTacToeSolver::Solve(const StrategyTask& task, TreeNode*& result_tree) { 
-
     // Рекурсивно оценить позицию
     PositionScore score = EvaluatePosition(task.board, task.next_player, task.strategy_player);
     // Построить оптимальную стратегию
@@ -756,4 +755,15 @@ int TicTacToeSolver::CountMark(const GameBoard& board, char mark) {
 
     // Вернуть значение счётчика.
     return count;
+}
+
+char TicTacToeSolver::GetOpponent(char player) {
+    // Проверить, равен ли текущий игрок символу X.
+    if (player == 'X') {
+        // Вернуть O.
+        return 'O';
+    }
+
+    // Вернуть X.
+    return 'X';
 }
