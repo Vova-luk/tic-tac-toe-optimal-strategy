@@ -63,6 +63,289 @@ bool ParseStrategyTask(
     return true;
 }
 
+bool ParseBoardLines(
+    const std::vector<std::string>& lines,
+    GameBoard& board,
+    Error& error
+) {
+    // Для каждой из трёх строк поля выполнять
+    for (int row = 0; row < BOARD_ROWS; ++row) {
+        // Если длина текущей строки не равна 3
+        if (lines[row].size() != 3) {
+            // Записать сообщение об ошибке размера поля
+            error.type = BOARD_SIZE_ERROR;
+            error.file_path = "";
+            error.row = row + 1;
+            error.column = NO_POSITION;
+            return false;
+        }
+
+        // Для каждого символа текущей строки выполнять
+        for (int column = 0; column < BOARD_COLUMNS; ++column) {
+            char cell = lines[row][column];
+
+            // если символ не равен X, O и .
+            if (cell != 'X' && cell != 'O' && cell != '.') {
+                // Записать сообщение об ошибке
+                error.type = BOARD_SYMBOL_ERROR;
+                error.file_path = "";
+                error.row = row + 1;
+                error.column = column + 1;
+                return false;
+            }
+
+            // Сохранить символ в поле
+            board.cells[row][column] = cell;
+        }
+    }
+
+    return true;
+}
+
+bool ParsePlayers(
+    const std::vector<std::string>& lines,
+    StrategyTask& task,
+    Error& error
+) { 
+    // Проверить строку игрока стратегии
+    if (!IsCorrectPlayerLine(lines[3])) {
+        // Записать сообщение об ошибке
+        error.type = STRATEGY_PLAYER_ERROR;
+        error.file_path = "";
+        error.row = 4;
+        error.column = 1;
+        return false;
+    }
+
+    // Проверить строку игрока следующего хода
+    // Если строка игрока следующего хода некорректна
+    if (!IsCorrectPlayerLine(lines[4])) {
+        // Записать сообщение об ошибке
+        error.type = NEXT_PLAYER_ERROR;
+        error.file_path = "";
+        error.row = 5;
+        error.column = 1;
+        return false;
+    }
+
+    // Сохранить игрока стратегии
+    task.strategy_player = lines[3][0];
+    // Сохранить игрока следующего хода
+    task.next_player = lines[4][0];
+
+    return true;
+}
+
+bool IsCorrectPlayerLine(const std::string& line) {
+    // Если длина строки не равна 1
+    if (line.size() != 1) {
+        return false;
+    }
+
+    // Если единственный символ строки не равен X и не равен O
+    if (line[0] != 'X' && line[0] != 'O') {
+        // Вернуть false
+        return false;
+    }
+
+    return true;
+}
+
+bool ValidateCountsAndWins(
+    const GameBoard& board,
+    Error& error
+) {
+    // Установить счётчики X и O в ноль
+    int x_count = 0;
+    int o_count = 0;
+    int difference;
+    // Установить признаки победы X и O в false
+    bool x_wins = false;
+    bool o_wins = false;
+
+    // Для каждой клетки поля выполнять
+    for (int row = 0; row < BOARD_ROWS; ++row) {
+        for (int column = 0; column < BOARD_COLUMNS; ++column) {
+
+            // Если в клетке стоит X - увеличить счётчик X
+            if (board.cells[row][column] == 'X') {
+                ++x_count;
+            }
+
+            // Если в клетке стоит O - увеличить счётчик O
+            if (board.cells[row][column] == 'O') {
+                ++o_count;
+            }
+        }
+    }
+
+    // Проверить все строки поля
+    for (int row = 0; row < BOARD_ROWS; ++row) {
+        // Если строка полностью состоит из X
+        if (board.cells[row][0] == 'X' &&
+            board.cells[row][1] == 'X' &&
+            board.cells[row][2] == 'X') {
+            // Установить признак победы X
+            x_wins = true;
+        }
+
+        // Если строка полностью состоит из O
+        if (board.cells[row][0] == 'O' &&
+            board.cells[row][1] == 'O' &&
+            board.cells[row][2] == 'O') {
+            // Установить признак победы O
+            o_wins = true;
+        }
+    }
+
+    // Проверить все столбцы поля
+    for (int column = 0; column < BOARD_COLUMNS; ++column) {
+        // Если столбец полностью состоит из X
+        if (board.cells[0][column] == 'X' &&
+            board.cells[1][column] == 'X' &&
+            board.cells[2][column] == 'X') {
+            // Установить признак победы X
+            x_wins = true;
+        }
+
+        // Если столбец полностью состоит из O
+        if (board.cells[0][column] == 'O' &&
+            board.cells[1][column] == 'O' &&
+            board.cells[2][column] == 'O') {
+            // Установить признак победы O
+            o_wins = true;
+        }
+    }
+
+    // Проверить главную диагональ
+    if (board.cells[0][0] == 'X' &&
+        board.cells[1][1] == 'X' &&
+        board.cells[2][2] == 'X') {
+        // Установить признак победы
+        x_wins = true;
+    }
+
+    if (board.cells[0][0] == 'O' &&
+        board.cells[1][1] == 'O' &&
+        board.cells[2][2] == 'O') {
+        // Установить признак победы O
+        o_wins = true;
+    }
+
+    // Проверить побочную диагональ
+    if (board.cells[0][2] == 'X' &&
+        board.cells[1][1] == 'X' &&
+        board.cells[2][0] == 'X') {
+        // Установить признак победы X
+        x_wins = true;
+    }
+
+    if (board.cells[0][2] == 'O' &&
+        board.cells[1][1] == 'O' &&
+        board.cells[2][0] == 'O') {
+        // Установить признак победы O
+        o_wins = true;
+    }
+
+    // Вычислить разность между количеством X и O
+    difference = x_count - o_count;
+
+    // Если разность меньше -1 или больше 1
+    if (difference < -1 || difference > 1) {
+        // Записать сообщение об ошибке
+        error.type = MARK_COUNT_ERROR;
+        error.file_path = "";
+        error.row = NO_POSITION;
+        error.column = NO_POSITION;
+        return false;
+    }
+
+    // Если одновременно победили и X, и O
+    if (x_wins && o_wins) {
+        // Записать сообщение об ошибке
+        error.type = BOARD_STATE_ERROR;
+        error.file_path = "";
+        error.row = NO_POSITION;
+        error.column = NO_POSITION;
+        return false;
+    }
+
+    // Если победил X и количество фигур не соответствует допустимому
+    // состоянию
+    if (x_wins && !(x_count == o_count || x_count == o_count + 1)) {
+        // Записать сообщение об ошибке
+        error.type = BOARD_STATE_ERROR;
+        error.file_path = "";
+        error.row = NO_POSITION;
+        error.column = NO_POSITION;
+        return false;
+    }
+
+    // Если победил O и количество фигур не соответствует допустимому
+    // состоянию
+    if (o_wins && !(x_count == o_count || o_count == x_count + 1)) {
+        // Записать сообщение об ошибке
+        error.type = BOARD_STATE_ERROR;
+        error.file_path = "";
+        error.row = NO_POSITION;
+        error.column = NO_POSITION;
+        return false;
+    }
+
+    return true;
+}
+
+bool ValidateNextPlayer(
+    const GameBoard& board,
+    char next_player,
+    Error& error
+) {
+    // Установить счётчики X и O в ноль
+    int x_count = 0;
+    int o_count = 0;
+    int difference;
+
+    // Для каждой клетки поля выполнять
+    for (int row = 0; row < BOARD_ROWS; ++row) {
+        for (int column = 0; column < BOARD_COLUMNS; ++column) {
+            // Если в клетке стоит X - увеличить счётчик X
+            if (board.cells[row][column] == 'X') {
+                ++x_count;
+            }
+
+            // Если в клетке стоит O - увеличить счётчик O
+            if (board.cells[row][column] == 'O') {
+                ++o_count;
+            }
+        }
+    }
+
+    // Вычислить разность между количеством X и O
+    difference = x_count - o_count;
+
+    // Если разность равна 1 и следующий игрок не равен O
+    if (difference == 1 && next_player != 'O') {
+        // Записать сообщение об ошибке
+        error.type = NEXT_PLAYER_STATE_ERROR;
+        error.file_path = "";
+        error.row = NO_POSITION;
+        error.column = NO_POSITION;
+        return false;
+    }
+
+    // Если разность равна -1 и следующий игрок не равен X
+    if (difference == -1 && next_player != 'X') {
+        // Записать сообщение об ошибке
+        error.type = NEXT_PLAYER_STATE_ERROR;
+        error.file_path = "";
+        error.row = NO_POSITION;
+        error.column = NO_POSITION;
+        return false;
+    }
+
+    return true;
+}
+
 GameResult TicTacToeSolver::Solve(const StrategyTask& task, TreeNode*& result_tree) { 
     return GameResult{};
 }
@@ -134,7 +417,7 @@ PositionScore TicTacToeSolver::EvaluateMove(
         CountImmediateWins(next_board, GetOpponent(current_player));
 
     return score;
-    }
+}
 
 TreeNode* TicTacToeSolver::BuildOptimalTree(
         const GameBoard& board,
