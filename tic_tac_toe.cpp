@@ -506,4 +506,92 @@ TreeNode* TicTacToeSolver::BuildOptimalTree(
     }
     // Вернуть указатель на текущий узел
     return root;
+}
+
+bool TicTacToeSolver::GetTerminalResult(
+    const GameBoard& board,
+    char strategy_player,
+    GameResult& result
+) {
+    // Проверить победу X
+    if (HasWin(board, 'X')) {
+        // Если X победил, записать в результат победу или поражение в
+        // зависимости от игрока, для которого ищется стратегия
+        if (strategy_player == 'X') {
+            result = WIN;
+        } else {
+            result = LOSE;
+        }
+        return true;
     }
+
+    // Проверить победу O
+    if (HasWin(board, 'O')) {
+        // Если O победил, записать в результат победу или поражение в
+        // зависимости от игрока, для которого ищется стратегия.
+        if (strategy_player == 'O') {
+            result = WIN;
+        } else {
+            result = LOSE;
+        }
+        return true;
+    }
+
+    // Если поле заполнено, записать в result ничью
+    if (IsBoardFull(board)) {
+        result = DRAW;
+        return true;
+    }
+
+    return false;
+}
+
+bool TicTacToeSolver::HasWin(const GameBoard& board, char player) {
+    // Проверить все строки поля.
+    for (int row = 0; row < BOARD_ROWS; ++row) {
+        if (board.cells[row][0] == player &&
+            board.cells[row][1] == player &&
+            board.cells[row][2] == player) {
+            return true;
+        }
+    }
+
+    // Проверить все столбцы поля.
+    for (int column = 0; column < BOARD_COLUMNS; ++column) {
+        if (board.cells[0][column] == player &&
+            board.cells[1][column] == player &&
+            board.cells[2][column] == player) {
+            return true;
+        }
+    }
+
+    // Проверить главную диагональ.
+    if (board.cells[0][0] == player &&
+        board.cells[1][1] == player &&
+        board.cells[2][2] == player) {
+        return true;
+    }
+
+    // Проверить побочную диагональ.
+    if (board.cells[0][2] == player &&
+        board.cells[1][1] == player &&
+        board.cells[2][0] == player) {
+        return true;
+    }
+
+    return false;
+}
+
+bool TicTacToeSolver::IsBoardFull(const GameBoard& board) {
+    // Для каждой клетки поля выполнять
+    for (int row = 0; row < BOARD_ROWS; ++row) {
+        for (int column = 0; column < BOARD_COLUMNS; ++column) {
+            // Если значение клетки = ".", вернуть false.
+            if (board.cells[row][column] == '.') {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
