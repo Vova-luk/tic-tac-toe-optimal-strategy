@@ -650,3 +650,110 @@ bool TicTacToeSolver::IsBoardFull(const GameBoard& board) {
 
     return true;
 }
+
+int TicTacToeSolver::CompareScores(
+    const PositionScore& first,
+    const PositionScore& second,
+    char current_player,
+    char strategy_player
+) {
+    // Определить, совпадает ли текущий игрок с игроком стратегии
+    bool strategy_turn = current_player == strategy_player;
+
+    // Если результаты 1 и 2 оценки различаются
+    if (first.result != second.result) {
+        // Если ходит игрок стратегии
+        if (strategy_turn) {
+            // Если 1 оценка лучше 2ой, вернуть 1
+            if (first.result > second.result) {
+                return 1;
+            }
+            
+            return -1;
+        }
+
+        // Если 1я оценка хуже для игрока стратегии, чем 2я, вернуть 1
+        if (first.result < second.result) {
+            return 1;
+        }
+
+        return -1;
+    }
+
+    // Если результаты равны WIN
+    if (first.result == WIN) {
+        // Если ходит игрок стратегии и расстояния различаются
+        if (strategy_turn && first.distance != second.distance) {
+            // Если 1я дистанция меньше 2ой, вернуть 1
+            if (first.distance < second.distance) {
+                return 1;
+            }
+
+            return -1;
+        }
+
+        // Если ходит соперник и расстояния различаются
+        if (!strategy_turn && first.distance != second.distance) {
+            // Если 1я дистанция больше 2ой, вернуть 1
+            if (first.distance > second.distance) {
+                return 1;
+            }
+
+            return -1;
+        }
+    }
+
+    // Если результаты равны LOSE
+    if (first.result == LOSE) {
+        // Если ходит игрок стратегии и расстояния различаются
+        if (strategy_turn && first.distance != second.distance) {
+            // Если 1ая дистанция больше 2ой, вернуть 1
+            if (first.distance > second.distance) {
+                return 1;
+            }
+
+            return -1;
+        }
+
+        // Если ходит соперник и расстояния различаются
+        if (!strategy_turn && first.distance != second.distance) {
+            // Если 1ая дистанция меньше 2ой, вернуть 1
+            if (first.distance < second.distance) {
+                return 1;
+            }
+
+            return -1;
+        }
+    }
+
+    // Если значения немедленных ходов до победы различаются
+    if (first.next_player_win_count != second.next_player_win_count) {
+        // Если у 1го значение меньше, вернуть 1
+        if (first.next_player_win_count < second.next_player_win_count) {
+            return 1;
+        }
+
+        return -1;
+    }
+
+    return 0;
+}
+
+int TicTacToeSolver::CountMark(const GameBoard& board, char mark) {
+    // Установить счётчик в ноль.
+    int count = 0;
+
+    // Для каждой клетки поля выполнять:
+    for (int row = 0; row < BOARD_ROWS; ++row) {
+        for (int column = 0; column < BOARD_COLUMNS; ++column) {
+            // Проверить, равен ли символ клетки значению mark.
+            if (board.cells[row][column] == mark) {
+                // Увеличить счётчик на 1.
+                ++count;
+            }
+        }
+    }
+
+    // Вернуть значение счётчика.
+    return count;
+}
