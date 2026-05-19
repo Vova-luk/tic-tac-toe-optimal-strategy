@@ -1,5 +1,6 @@
 #include <vector>
 #include "./tic_tac_toe.hpp"
+#include <fstream>
 
 const int NO_POSITION = -1;
 const int TOTAL_INPUT_LINES = 5;
@@ -766,4 +767,57 @@ char TicTacToeSolver::GetOpponent(char player) {
 
     // Вернуть X.
     return 'X';
+}
+
+void DotFileWriter::AssignIds(TreeNode* node, int& next_id) {
+    node->id = next_id;
+    next_id = next_id + 1;
+
+    for (TreeNode* child : node->children) {
+        AssignIds(child, next_id);
+    }
+}
+
+void DotFileWriter::WriteNodes(std::ostream& output, TreeNode* node) {
+    output << "    n" << node->id << " [label=\"";
+    output << node->board.cells[0][0] << node->board.cells[0][1] << node->board.cells[0][2] << "\\n";
+    output << node->board.cells[1][0] << node->board.cells[1][1] << node->board.cells[1][2] << "\\n";
+    output << node->board.cells[2][0] << node->board.cells[2][1] << node->board.cells[2][2] << "\"];\n";
+
+    for (TreeNode* child : node->children) {
+        WriteNodes(output, child);
+    }
+}
+
+void DotFileWriter::WriteEdges(std::ostream& output, TreeNode* node) {
+    for (TreeNode* child : node->children) {
+        output << "    n" << node->id << " -> n" << child->id << ";\n";
+        WriteEdges(output, child);
+    }
+}
+
+bool DotFileWriter::Write(
+    const std::string& path,
+    TreeNode* root,
+    Error& error
+) {
+    std::ofstream output(path);
+    int next_id = 0;
+
+    if (!output.is_open()) {
+        error.type = OUTPUT_FILE_ERROR;
+        error.file_path = path;
+        error.row = NO_POSITION;
+        error.column = NO_POSITION;
+        return false;
+    }
+
+    AssignIds(root, next_id);
+
+    output << "digraph t {\n";
+    WriteNodes(output, root);
+    WriteEdges(output, root);
+    output << "}\n";
+
+    return true;
 }
