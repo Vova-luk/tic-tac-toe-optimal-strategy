@@ -2,12 +2,6 @@
 #include "./tic_tac_toe.hpp"
 #include <fstream>
 
-const int NO_POSITION = -1;
-const int TOTAL_INPUT_LINES = 5;
-const int BOARD_ROWS = 3;
-const int BOARD_COLUMNS = 3;
-const int BOARD_SIZE = 9;
-
 bool ParseStrategyTask(
     const std::vector<std::string>& lines,
     StrategyTask& task,
@@ -770,28 +764,46 @@ char TicTacToeSolver::GetOpponent(char player) {
 }
 
 void DotFileWriter::AssignIds(TreeNode* node, int& next_id) {
+    // Записать текущее значение next_id в поле id текущей вершины.
     node->id = next_id;
+    // Увеличить значение next id на 1.
     next_id = next_id + 1;
 
+    // Для каждого дочернего узла текущей вершины выполнять:
     for (TreeNode* child : node->children) {
+        // Рекурсивно вызвать метод для дочернего узла.
         AssignIds(child, next_id);
     }
 }
 
 void DotFileWriter::WriteNodes(std::ostream& output, TreeNode* node) {
+    // Начать запись текущей вершины в поток output в формате DOT.
+    // Записать имя вершины в виде символа n и значения id текущего узла.
     output << "    n" << node->id << " [label=\"";
+    // Записать первую строку поля
+    // Записать символ перевода строки в формате \n.
     output << node->board.cells[0][0] << node->board.cells[0][1] << node->board.cells[0][2] << "\\n";
+    // Записать вторую строку поля
+    // Записать символ перевода строки в формате \n.
     output << node->board.cells[1][0] << node->board.cells[1][1] << node->board.cells[1][2] << "\\n";
+    // Записать третью строку поля
+    // Записать символ перевода строки в формате \n.
     output << node->board.cells[2][0] << node->board.cells[2][1] << node->board.cells[2][2] << "\"];\n";
 
+    // Для каждого дочернего узла текущей вершины рекурсивно записать
+    // вершины графа
     for (TreeNode* child : node->children) {
         WriteNodes(output, child);
     }
 }
 
 void DotFileWriter::WriteEdges(std::ostream& output, TreeNode* node) {
+    // Для каждого дочернего узла текущей вершины выполнять:
     for (TreeNode* child : node->children) {
+        // Записать в поток output ребро от текущей вершины к дочерней
+        // вершине в формате DOT.
         output << "    n" << node->id << " -> n" << child->id << ";\n";
+        // Рекурсивно вызвать метод для дочернего узла
         WriteEdges(output, child);
     }
 }
@@ -804,7 +816,9 @@ bool DotFileWriter::Write(
     std::ofstream output(path);
     int next_id = 0;
 
+    //  Попытаться открыть выходной файл.
     if (!output.is_open()) {
+        // Записать сообщение об ошибке доступа к выходному файлу.
         error.type = OUTPUT_FILE_ERROR;
         error.file_path = path;
         error.row = NO_POSITION;
@@ -812,12 +826,69 @@ bool DotFileWriter::Write(
         return false;
     }
 
+    // Присвоить вершинам номера
     AssignIds(root, next_id);
 
+    // Записать заголовок графа
     output << "digraph t {\n";
+    // Записать все вершины 
     WriteNodes(output, root);
+    // Записать все рёбра
     WriteEdges(output, root);
+    // Записать закрывающую строку (}.)
     output << "}\n";
 
     return true;
+}
+
+std::string Error::GetMessage() const {
+    if (type == INPUT_FILE_ERROR) {
+        return "Ошибка доступа к входному файлу";
+    }
+
+    if (type == OUTPUT_FILE_ERROR) {
+        return "Ошибка доступа к выходному файлу";
+    }
+
+    if (type == EMPTY_INPUT_ERROR) {
+        return "Пустой входной файл";
+    }
+
+    if (type == MISSING_LINES_ERROR) {
+        return "Во входном файле отсутствует одна или несколько обязательных строк";
+    }
+
+    if (type == EXTRA_LINES_ERROR) {
+        return "Во входном файле присутствуют лишние строки";
+    }
+
+    if (type == BOARD_SIZE_ERROR) {
+        return "Описание игрового поля не соответствует размеру 3x3";
+    }
+
+    if (type == BOARD_SYMBOL_ERROR) {
+        return "В поле присутствуют символы, отличные от X, O и .";
+    }
+
+    if (type == STRATEGY_PLAYER_ERROR) {
+        return "Игрок, для которого строится стратегия, задан неверно";
+    }
+
+    if (type == NEXT_PLAYER_ERROR) {
+        return "Игрок, совершающий следующий ход, задан неверно";
+    }
+
+    if (type == MARK_COUNT_ERROR) {
+        return "Некорректное соотношение количества X и O";
+    }
+
+    if (type == BOARD_STATE_ERROR) {
+        return "Состояние игрового поля не соответствует правилам игры";
+    }
+
+    if (type == NEXT_PLAYER_STATE_ERROR) {
+        return "Указанный игрок, выполняющий следующий ход, не соответствует состоянию поля";
+    }
+
+    return "";
 }

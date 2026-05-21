@@ -5,6 +5,13 @@
 #include <string>
 #include <vector>
 
+const int NO_POSITION = -1;
+const int TOTAL_INPUT_LINES = 5;
+const int BOARD_ROWS = 3;
+const int BOARD_COLUMNS = 3;
+const int BOARD_SIZE = 9;
+const std::size_t MAX_READABLE_LINES = 6;
+
 enum GameResult {
     LOSE = -1,
     DRAW = 0,
@@ -119,12 +126,6 @@ private:
 };
 
 void DeleteTree(TreeNode* node);
-
-bool ReadInputFile(
-    const std::string& path,
-    std::vector<std::string>& lines,
-    Error& error
-);
 
 bool IsCorrectPlayerLine(const std::string& line);
 
