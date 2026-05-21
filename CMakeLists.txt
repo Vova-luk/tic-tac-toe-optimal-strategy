@@ -14,6 +14,18 @@ target_include_directories(tictactoe PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+add_executable(tic_tac_toe
+    main.cpp
+)
+
+set_target_properties(tic_tac_toe PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(tic_tac_toe PRIVATE
+    tictactoe
+)
+
 include(FetchContent)
 
 FetchContent_Declare(
