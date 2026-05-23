@@ -90,8 +90,6 @@ public:
 
 private:
     char GetOpponent(char player);
-    int CountMark(const GameBoard& board, char mark);
-    bool HasWin(const GameBoard& board, char player);
     bool IsBoardFull(const GameBoard& board);
     int CountImmediateWins(const GameBoard& board, char player);
 
@@ -159,5 +157,16 @@ bool ParseStrategyTask(
 );
 
 std::string ResultToText(GameResult result);
+
+void SetError(
+    Error& error,
+    ErrorType type,
+    const std::string& file_path = "",
+    int row = NO_POSITION,
+    int column = NO_POSITION
+);
+
+int CountMark(const GameBoard& board, char mark);
+bool HasWin(const GameBoard& board, char player);
 
 #endif
