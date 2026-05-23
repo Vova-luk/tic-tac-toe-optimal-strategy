@@ -1,0 +1,207 @@
+Список тестов
+
+01. Valid X can win in top row, next X
+    XX.
+    OO.
+    ...
+    X
+    X
+
+02. Valid O has a threat, next O
+    OO.
+    XX.
+    X..
+    O
+    O
+
+03. Valid middle game 1, strategy X, next X
+    XO.
+    .X.
+    O..
+    X
+    X
+
+04. Valid middle game 2, strategy O, next O
+    XOX
+    O..
+    X..
+    O
+    O
+
+05. Valid middle game 3, strategy X, next X
+    XOX
+    OO.
+    X..
+    X
+    X
+
+06. Valid terminal X win
+    XO.
+    OX.
+    ..X
+    X
+    O
+
+07. Valid terminal O win
+    OOO
+    XX.
+    X..
+    O
+    X
+
+08. Valid full board draw
+    XOX
+    XOO
+    OXX
+    X
+    O
+
+09. Valid defensive position, next X
+    X.O
+    .O.
+    X..
+    O
+    X
+
+10. Valid fork-like position, next X
+    OX.
+    .X.
+    O..
+    X
+    X
+
+11. Valid top row blocked, next X
+    XXO
+    O..
+    ...
+    O
+    X
+
+12. Valid vertical threat, next X
+    X.O
+    X..
+    .O.
+    X
+    X
+
+13. Valid scattered position, next X
+    XO.
+    ..X
+    O..
+    O
+    X
+
+14. Valid almost middle game, next O
+    XOX
+    .O.
+    X..
+    O
+    O
+
+15. Invalid empty input file
+    <empty file>
+
+16. Invalid missing required line
+    XX.
+    OO.
+    ...
+    X
+
+17. Invalid extra line
+    XX.
+    OO.
+    ...
+    X
+    X
+    extra
+
+18. Invalid first board row is too long
+    XX..
+    OO.
+    ...
+    X
+    X
+
+19. Invalid second board row is too short
+    XX.
+    O.
+    ...
+    X
+    X
+
+20. Invalid board symbol
+    XY.
+    OO.
+    ...
+    X
+    X
+
+21. Invalid strategy player
+    XX.
+    OO.
+    ...
+    Y
+    X
+
+22. Invalid next player
+    XX.
+    OO.
+    ...
+    X
+    Y
+
+23. Invalid too many X marks
+    XXX
+    ...
+    ...
+    X
+    O
+
+24. Invalid too many O marks
+    OO.
+    ...
+    ...
+    O
+    X
+
+25. Invalid both players win
+    XXX
+    OOO
+    ...
+    X
+    X
+
+26. Invalid next player for equal counts
+    XO.
+    ...
+    ...
+    X
+    O
+
+27. Valid empty board, strategy X, next X
+    ...
+    ...
+    ...
+    X
+    X
+
+28. Valid first move in corner, strategy O, next O
+    X..
+    ...
+    ...
+    O
+    O
+
+29. Valid first move in center, strategy X, next O
+    ...
+    .X.
+    ...
+    X
+    O
+
+30. Valid one X and one O, next X
+    XO.
+    ...
+    ...
+    X
+    X
