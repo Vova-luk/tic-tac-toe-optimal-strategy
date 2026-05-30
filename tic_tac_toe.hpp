@@ -320,7 +320,7 @@ private:
      * @param output Поток записи в выходной файл.
      * @param node Текущая вершина дерева.
      */
-    void WriteNodes(std::ostream& output, TreeNode* node);
+    void WriteNodes(std::ostream& output, const TreeNode* node);
 
     /**
      * @brief Записывает ребра дерева в DOT-файл.
@@ -328,7 +328,7 @@ private:
      * @param output Поток записи в выходной файл.
      * @param node Текущая вершина дерева.
      */
-    void WriteEdges(std::ostream& output, TreeNode* node);
+    void WriteEdges(std::ostream& output, const TreeNode* node);
 };
 
 /**

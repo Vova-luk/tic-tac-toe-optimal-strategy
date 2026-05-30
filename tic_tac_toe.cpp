@@ -640,7 +640,7 @@ void DotFileWriter::AssignIds(TreeNode* node, int& next_id) {
     }
 }
 
-void DotFileWriter::WriteNodes(std::ostream& output, TreeNode* node) {
+void DotFileWriter::WriteNodes(std::ostream& output, const TreeNode* node) {
     // Начать запись текущей вершины в поток output в формате DOT.
     // Записать имя вершины в виде символа n и значения id текущего узла.
     output << "    n" << node->id << " [label=\"";
@@ -661,7 +661,7 @@ void DotFileWriter::WriteNodes(std::ostream& output, TreeNode* node) {
     }
 }
 
-void DotFileWriter::WriteEdges(std::ostream& output, TreeNode* node) {
+void DotFileWriter::WriteEdges(std::ostream& output, const TreeNode* node) {
     // Для каждого дочернего узла текущей вершины выполнять:
     for (TreeNode* child : node->children) {
         // Записать в поток output ребро от текущей вершины к дочерней
