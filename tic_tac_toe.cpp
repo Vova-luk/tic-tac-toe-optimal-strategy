@@ -1,6 +1,7 @@
 #include <vector>
 #include "./tic_tac_toe.hpp"
 #include <fstream>
+#include <map>
 
 bool ParseStrategyTask(
     const std::vector<std::string>& lines,
@@ -516,85 +517,33 @@ int TicTacToeSolver::CompareScores(
     char strategy_player
 ) {
     // Определить, совпадает ли текущий игрок с игроком стратегии
-    bool strategy_turn = current_player == strategy_player;
+    const bool strategy_turn = current_player == strategy_player;
 
-    // Если результаты 1 и 2 оценки различаются
-    if (first.result != second.result) {
-        // Если ходит игрок стратегии
-        if (strategy_turn) {
-            // Если 1 оценка лучше 2ой, вернуть 1
-            if (first.result > second.result) {
-                return 1;
-            }
-            
-            return -1;
-        }
-
-        // Если 1я оценка хуже для игрока стратегии, чем 2я, вернуть 1
-        if (first.result < second.result) {
-            return 1;
-        }
-
-        return -1;
+    // Сравнить оценки по результату игры.
+    const int result_cmp = CompareByPreference(
+        first.result,
+        second.result,
+        strategy_turn
+    );
+    // Если один результат лучше другого, вернуть результат сравнения.
+    if (result_cmp != 0) {
+        return result_cmp;
     }
 
-    // Если результаты равны WIN
-    if (first.result == WIN) {
-        // Если ходит игрок стратегии и расстояния различаются
-        if (strategy_turn && first.distance != second.distance) {
-            // Если 1я дистанция меньше 2ой, вернуть 1
-            if (first.distance < second.distance) {
-                return 1;
-            }
-
-            return -1;
-        }
-
-        // Если ходит соперник и расстояния различаются
-        if (!strategy_turn && first.distance != second.distance) {
-            // Если 1я дистанция больше 2ой, вернуть 1
-            if (first.distance > second.distance) {
-                return 1;
-            }
-
-            return -1;
-        }
+    // Если результаты одинаковые, сравнить расстояние до конца игры.
+    const int distance_cmp = CompareDistance(first, second, strategy_turn);
+    // Если расстояние различается, вернуть результат сравнения.
+    if (distance_cmp != 0) {
+        return distance_cmp;
     }
 
-    // Если результаты равны LOSE
-    if (first.result == LOSE) {
-        // Если ходит игрок стратегии и расстояния различаются
-        if (strategy_turn && first.distance != second.distance) {
-            // Если 1ая дистанция больше 2ой, вернуть 1
-            if (first.distance > second.distance) {
-                return 1;
-            }
-
-            return -1;
-        }
-
-        // Если ходит соперник и расстояния различаются
-        if (!strategy_turn && first.distance != second.distance) {
-            // Если 1ая дистанция меньше 2ой, вернуть 1
-            if (first.distance < second.distance) {
-                return 1;
-            }
-
-            return -1;
-        }
-    }
-
-    // Если значения немедленных ходов до победы различаются
-    if (first.next_player_win_count != second.next_player_win_count) {
-        // Если у 1го значение меньше, вернуть 1
-        if (first.next_player_win_count < second.next_player_win_count) {
-            return 1;
-        }
-
-        return -1;
-    }
-
-    return 0;
+    // Если результат и расстояние совпадают, сравнить количество
+    // немедленных выигрышных ходов у следующего игрока.
+    return CompareByPreference(
+        first.next_player_win_count,
+        second.next_player_win_count,
+        false
+    );
 }
 
 int CountMark(const GameBoard& board, char mark) {
@@ -703,54 +652,32 @@ bool DotFileWriter::Write(
 }
 
 std::string Error::GetMessage() const {
-    if (type == INPUT_FILE_ERROR) {
-        return "Ошибка доступа к входному файлу";
+    // Создать таблицу сообщений об ошибках
+    std::map<ErrorType, std::string> errorMessages =
+    {
+        { INPUT_FILE_ERROR, "Ошибка доступа к входному файлу" },
+        { OUTPUT_FILE_ERROR, "Ошибка доступа к выходному файлу" },
+        { EMPTY_INPUT_ERROR, "Пустой входной файл" },
+        { MISSING_LINES_ERROR, "Во входном файле отсутствует одна или несколько обязательных строк" },
+        { EXTRA_LINES_ERROR, "Во входном файле присутствуют лишние строки" },
+        { BOARD_SIZE_ERROR, "Описание игрового поля не соответствует размеру 3x3" },
+        { BOARD_SYMBOL_ERROR, "В поле присутствуют символы, отличные от X, O и ." },
+        { STRATEGY_PLAYER_ERROR, "Игрок, для которого строится стратегия, задан неверно" },
+        { NEXT_PLAYER_ERROR, "Игрок, совершающий следующий ход, задан неверно" },
+        { MARK_COUNT_ERROR, "Некорректное соотношение количества X и O" },
+        { BOARD_STATE_ERROR, "Состояние игрового поля не соответствует правилам игры" },
+        { NEXT_PLAYER_STATE_ERROR, "Указанный игрок, выполняющий следующий ход, не соответствует состоянию поля" }
+    };
+
+    // Найти сообщение по типу ошибки
+    std::map<ErrorType, std::string>::iterator messageIterator = errorMessages.find(type);
+
+    // Если сообщение найдено, вернуть его
+    if (messageIterator != errorMessages.end()) {
+        return messageIterator->second;
     }
 
-    if (type == OUTPUT_FILE_ERROR) {
-        return "Ошибка доступа к выходному файлу";
-    }
-
-    if (type == EMPTY_INPUT_ERROR) {
-        return "Пустой входной файл";
-    }
-
-    if (type == MISSING_LINES_ERROR) {
-        return "Во входном файле отсутствует одна или несколько обязательных строк";
-    }
-
-    if (type == EXTRA_LINES_ERROR) {
-        return "Во входном файле присутствуют лишние строки";
-    }
-
-    if (type == BOARD_SIZE_ERROR) {
-        return "Описание игрового поля не соответствует размеру 3x3";
-    }
-
-    if (type == BOARD_SYMBOL_ERROR) {
-        return "В поле присутствуют символы, отличные от X, O и .";
-    }
-
-    if (type == STRATEGY_PLAYER_ERROR) {
-        return "Игрок, для которого строится стратегия, задан неверно";
-    }
-
-    if (type == NEXT_PLAYER_ERROR) {
-        return "Игрок, совершающий следующий ход, задан неверно";
-    }
-
-    if (type == MARK_COUNT_ERROR) {
-        return "Некорректное соотношение количества X и O";
-    }
-
-    if (type == BOARD_STATE_ERROR) {
-        return "Состояние игрового поля не соответствует правилам игры";
-    }
-
-    if (type == NEXT_PLAYER_STATE_ERROR) {
-        return "Указанный игрок, выполняющий следующий ход, не соответствует состоянию поля";
-    }
-
+    // Если тип ошибки неизвестен, вернуть пустую строку
     return "";
 }
 
@@ -765,4 +692,31 @@ void SetError(
     error.file_path = file_path;
     error.row = row;
     error.column = column;
+}
+
+int CompareByPreference(int first, int second, bool prefer_greater) {
+    // Если значения равны, они считаются одинаковыми.
+    if (first == second) {
+        return 0;
+    }
+
+    // Вернуть 1, если первое значение лучше второго
+    // с учётом выбранного направления сравнения.
+    return ((first > second) == prefer_greater) ? 1 : -1;
+}
+
+int CompareDistance(
+    const PositionScore& first,
+    const PositionScore& second,
+    bool strategy_turn
+) {
+    // Если значения равны, вернуть 0
+    if (first.result == DRAW) {
+        return 0;
+    }
+
+    // Определить, какое расстояние считать лучшим
+    const bool prefer_greater = (first.result == LOSE) == strategy_turn;
+    // Сравнить расстояния с учётом выбранного лучшего.
+    return CompareByPreference(first.distance, second.distance, prefer_greater);
 }
