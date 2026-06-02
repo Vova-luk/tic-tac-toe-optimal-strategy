@@ -532,4 +532,8 @@ bool ReadInputFile(
     Error& error
 );
 
+int CompareDistance(const PositionScore& first, const PositionScore& second, bool strategy_turn);
+
+int CompareByPreference(int first, int second, bool prefer_greater);
+
 #endif

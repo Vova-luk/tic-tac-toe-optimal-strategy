@@ -23,3 +23,6 @@ Thumbs.db
 
 # doxygen
 docs/
+
+# coverage
+coverage/
