@@ -682,15 +682,15 @@ std::string Error::GetMessage() const {
 }
 
 void SetError(
-    Error& error,
-    ErrorType type,
-    const std::string& file_path,
-    int row,
-    int column
-) {
+    Error& error, ErrorType type, const std::string& file_path, int row, int column
+) { 
+    // Заполнить тип ошибки
     error.type = type;
+    // Заполнить путь до файла
     error.file_path = file_path;
+    // Заполнить строку 
     error.row = row;
+    // Заполнить столбец
     error.column = column;
 }
 
